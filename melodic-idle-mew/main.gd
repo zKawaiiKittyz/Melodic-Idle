@@ -1,4 +1,5 @@
-extends Node2D
+class_name Main
+extends Node
 
 signal harmony_changed
 
@@ -42,15 +43,17 @@ var sequence: Array[Key] = []
 
 var combos: Array[Combo] = []
 
-@onready var harmony_label: Label = $Label
+@onready var harmony_label: Label = %HarmonyLabel
 @onready var sound_player: AudioStreamPlayer = $AudioStreamPlayer
-@onready var keypress_particles: GPUParticles2D = $KeypressParticles
+@onready var keypress_particles: GPUParticles2D = %KeypressParticles
+@onready var fps_label: Label = %FPSLabel
 
 #region Ready
 
 func _ready() -> void:
 	_setup_harmony_label()
 	_create_combos()
+	_update_fps_label()
 
 func _setup_harmony_label() -> void:
 	harmony_changed.connect(_update_harmony_label)
@@ -90,6 +93,11 @@ func _unhandled_key_input(event: InputEvent) -> void:
 #endregion
 
 #region Control
+
+func _update_fps_label() -> void:
+	while true:
+		fps_label.text = str(Engine.get_frames_per_second())
+		await get_tree().create_timer(1.0).timeout
 
 func _update_harmony_label() -> void:
 	harmony_label.text = "Harmony: %s" % str(harmony).pad_decimals(2)
@@ -136,7 +144,7 @@ func _trigger_combo(combo: Combo) -> void:
 	print("Unlocked %s!" % combo.name)
 
 func _play_particle_effect() -> void:
-	keypress_particles.global_position = get_viewport_rect().size / 2.0
+	#keypress_particles.global_position = get_viewport_rect().size / 2.0
 	keypress_particles.emitting = true
 
 #endregion
