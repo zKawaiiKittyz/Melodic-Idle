@@ -44,6 +44,7 @@ var combos: Array[Combo] = []
 
 @onready var harmony_label: Label = $Label
 @onready var sound_player: AudioStreamPlayer = $AudioStreamPlayer
+@onready var keypress_particles: GPUParticles2D = $KeypressParticles
 
 #region Ready
 
@@ -106,6 +107,7 @@ func _add_to_sequence(key: Key) -> void:
 	print("Current sequence: ", sequence.map(OS.get_keycode_string))
 	
 	_play_key_sound(key)
+	_play_particle_effect()
 	_check_for_combo()
 
 func _play_key_sound(key: Key) -> void:
@@ -132,6 +134,10 @@ func _trigger_combo(combo: Combo) -> void:
 	harmony_per_second += combo.reward
 	combo.unlocked = true
 	print("Unlocked %s!" % combo.name)
+
+func _play_particle_effect() -> void:
+	keypress_particles.global_position = get_viewport_rect().size / 2.0
+	keypress_particles.emitting = true
 
 #endregion
 
@@ -173,7 +179,7 @@ class Combo:
 		 
 		if played_sequence.size() < combo_sequence_size:
 			return false
-		
+			
 		var sliced: Array[Key] =played_sequence.slice(
 			-combo_sequence_size,
 			played_sequence.size()
