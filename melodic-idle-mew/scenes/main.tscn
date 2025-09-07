@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://dhwj74og5vhbq"]
 
-[ext_resource type="Script" uid="uid://c8mvylg0g5q2k" path="res://main.gd" id="1_ig7tw"]
+[ext_resource type="Script" uid="uid://c8mvylg0g5q2k" path="res://Scripts/main.gd" id="1_o5qli"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_ig7tw"]
 
@@ -29,7 +29,7 @@ scale_curve = SubResource("CurveTexture_lquwl")
 color_ramp = SubResource("GradientTexture1D_h2yge")
 
 [node name="Main" type="Node"]
-script = ExtResource("1_ig7tw")
+script = ExtResource("1_o5qli")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -67,3 +67,11 @@ texture = SubResource("CanvasTexture_ig7tw")
 lifetime = 0.8
 one_shot = true
 process_material = SubResource("ParticleProcessMaterial_7mycd")
+
+[node name="UpgradesDisplay" type="VBoxContainer" parent="CanvasLayer"]
+unique_name_in_owner = true
+offset_left = 836.0
+offset_top = 25.0
+offset_right = 876.0
+offset_bottom = 65.0
+theme_override_constants/separation = 20

@@ -32,6 +32,7 @@ const INPUT_KEYS: Dictionary[StringName, Key] = {
 	&";": KEY_SEMICOLON,
 }
 const SOUND_PLAYER_SCENE: PackedScene = preload("uid://nmbacrjhvq4e")
+const UPGRADE_DISPLAY_ROW_SCENE: PackedScene = preload("uid://78mqrogxb8mt")
 
 var harmony_per_second: float = 1.0
 var sequence: Array[Key] = []
@@ -42,6 +43,7 @@ var harmony: float = 0.0:
 @onready var harmony_label: Label = %HarmonyLabel
 @onready var keypress_particles: GPUParticles2D = %KeypressParticles
 @onready var fps_label: Label = %FPSLabel
+@onready var upgrades_display: VBoxContainer = %UpgradesDisplay
 
 
 #region Ready
@@ -50,6 +52,7 @@ var harmony: float = 0.0:
 func _ready() -> void:
 	_setup_harmony_label()
 	_create_combos()
+	_populate_upgrades_display()
 	_update_fps_label()
 
 
@@ -162,6 +165,17 @@ func _trigger_combo(combo: Combo) -> void:
 func _play_particle_effect() -> void:
 	#keypress_particles.global_position = get_viewport_rect().size / 2.0
 	keypress_particles.emitting = true
+
+
+func _populate_upgrades_display() -> void:
+	for combo: Combo in combos:
+		var row = UPGRADE_DISPLAY_ROW_SCENE.instantiate()
+
+		row.get_node("%InstrumentNameLabel").text = combo.name
+		row.get_node("%CostLabel").text = "Cost: %s" % combo.cost
+		row.get_node("%RewardLabel").text = "+%s/s" % combo.reward
+
+		upgrades_display.add_child(row)
 
 
 #endregion
