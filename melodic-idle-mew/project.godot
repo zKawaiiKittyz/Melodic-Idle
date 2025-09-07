@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Melodic Idle Mew"
-run/main_scene="uid://dhwj74og5vhbq"
+run/main_scene="uid://dwyv653jb45xi"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://icon.svg"
 
