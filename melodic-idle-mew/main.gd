@@ -33,6 +33,7 @@ const INPUT_KEYS: Dictionary[StringName, Key] = {
 	&"L": KEY_L,
 	&";": KEY_SEMICOLON,
 }
+const SoundPlayerScene: PackedScene = preload("res://sound_player.tscn")
 
 var harmony: float = 0.0:
 	set = set_harmony
@@ -44,7 +45,6 @@ var sequence: Array[Key] = []
 var combos: Array[Combo] = []
 
 @onready var harmony_label: Label = %HarmonyLabel
-@onready var sound_player: AudioStreamPlayer = $AudioStreamPlayer
 @onready var keypress_particles: GPUParticles2D = %KeypressParticles
 @onready var fps_label: Label = %FPSLabel
 
@@ -119,8 +119,12 @@ func _add_to_sequence(key: Key) -> void:
 	_check_for_combo()
 
 func _play_key_sound(key: Key) -> void:
-	sound_player.stream = KEY_SOUNDS[key]
-	sound_player.play()
+	var sound_player_instance = SoundPlayerScene.instantiate()
+
+	add_child(sound_player_instance)
+
+	sound_player_instance.stream = KEY_SOUNDS[key]
+	sound_player_instance.play()
 
 func _check_for_combo():
 	for combo: Combo in combos:

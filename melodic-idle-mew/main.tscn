@@ -31,8 +31,6 @@ color_ramp = SubResource("GradientTexture1D_h2yge")
 [node name="Main" type="Node"]
 script = ExtResource("1_ig7tw")
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
-
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="HarmonyLabel" type="Label" parent="CanvasLayer"]
