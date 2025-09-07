@@ -203,12 +203,13 @@ class Combo:
 				]
 	
 	
+	## Checks whether this combo contains the player's played sequence
 	func sequence_matches(played_sequence: Array[Key]) -> bool:
 		var combo_sequence_size: int = combo_sequence.size()
 		 
 		if played_sequence.size() < combo_sequence_size:
 			return false
-			
+		
 		var sliced: Array[Key] =played_sequence.slice(
 			-combo_sequence_size,
 			played_sequence.size()
