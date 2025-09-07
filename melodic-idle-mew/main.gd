@@ -1,6 +1,7 @@
 class_name Main
 extends Node
 
+
 signal harmony_changed
 
 enum ComboType {
@@ -9,9 +10,7 @@ enum ComboType {
 	ORGAN,
 	SCHLONGO,
 }
-
 const MAX_SEQUENCE_LENGTH: int = 8
-
 const KEY_SOUNDS: Dictionary[Key, Resource] = {
 	KEY_A: preload("res://sounds/c4.ogg"),
 	KEY_S: preload("res://sounds/d4.ogg"),
@@ -22,7 +21,6 @@ const KEY_SOUNDS: Dictionary[Key, Resource] = {
 	KEY_L: preload("res://sounds/b4.ogg"),
 	KEY_SEMICOLON: preload("res://sounds/c5.ogg"),
 }
-
 const INPUT_KEYS: Dictionary[StringName, Key] = {
 	&"A": KEY_A,
 	&"S": KEY_S,
@@ -33,77 +31,88 @@ const INPUT_KEYS: Dictionary[StringName, Key] = {
 	&"L": KEY_L,
 	&";": KEY_SEMICOLON,
 }
-const SoundPlayerScene: PackedScene = preload("res://sound_player.tscn")
-
-var harmony: float = 0.0:
-	set = set_harmony
+const SOUND_PLAYER_SCENE: PackedScene = preload("uid://nmbacrjhvq4e")
 
 var harmony_per_second: float = 1.0
-
 var sequence: Array[Key] = []
-
 var combos: Array[Combo] = []
+var harmony: float = 0.0:
+	set = set_harmony
 
 @onready var harmony_label: Label = %HarmonyLabel
 @onready var keypress_particles: GPUParticles2D = %KeypressParticles
 @onready var fps_label: Label = %FPSLabel
 
+
 #region Ready
+
 
 func _ready() -> void:
 	_setup_harmony_label()
 	_create_combos()
 	_update_fps_label()
 
+
 func _setup_harmony_label() -> void:
 	harmony_changed.connect(_update_harmony_label)
 	_update_harmony_label()
+
 
 func _create_combos() -> void:
 	for combo_type: ComboType in ComboType.values():
 		var new_combo: Combo = Combo.new(combo_type)
 		combos.append(new_combo)
 
+
 #endregion
 
+
 #region Setters
+
 
 func set_harmony(new_harmony: float) -> void:
 	if harmony == new_harmony:
 		return
-	
 	harmony = new_harmony
-	
 	harmony_changed.emit()
+
 
 #endregion
 
+
 #region Signals
+
 
 func _process(delta: float) -> void:
 	_increment_harmony(delta)
+
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	for action_name: StringName in INPUT_KEYS:
 		if event.is_action_pressed(action_name, false, true):
 			_add_to_sequence(INPUT_KEYS[action_name])
-			
 			break
+
 
 #endregion
 
+
 #region Control
+
 
 func _update_fps_label() -> void:
 	while true:
 		fps_label.text = str(Engine.get_frames_per_second())
 		await get_tree().create_timer(1.0).timeout
 
+
 func _update_harmony_label() -> void:
 	harmony_label.text = "Harmony: %s" % str(harmony).pad_decimals(2)
 
+
 func _increment_harmony(delta: float) -> void:
 	harmony += harmony_per_second * delta
+
 
 func _add_to_sequence(key: Key) -> void:
 	get_viewport().set_input_as_handled()
@@ -118,13 +127,14 @@ func _add_to_sequence(key: Key) -> void:
 	_play_particle_effect()
 	_check_for_combo()
 
+
 func _play_key_sound(key: Key) -> void:
-	var sound_player_instance = SoundPlayerScene.instantiate()
-
+	var sound_player_instance: AudioStreamPlayer = SOUND_PLAYER_SCENE.instantiate()
 	add_child(sound_player_instance)
-
+	
 	sound_player_instance.stream = KEY_SOUNDS[key]
 	sound_player_instance.play()
+
 
 func _check_for_combo():
 	for combo: Combo in combos:
@@ -141,19 +151,24 @@ func _check_for_combo():
 				
 				break
 
+
 func _trigger_combo(combo: Combo) -> void:
 	harmony -= combo.cost
 	harmony_per_second += combo.reward
 	combo.unlocked = true
 	print("Unlocked %s!" % combo.name)
 
+
 func _play_particle_effect() -> void:
 	#keypress_particles.global_position = get_viewport_rect().size / 2.0
 	keypress_particles.emitting = true
 
+
 #endregion
 
+
 #region Sub-Classes
+
 
 class Combo:
 	var name: String
@@ -161,6 +176,7 @@ class Combo:
 	var reward: int
 	var unlocked: bool = false
 	var combo_sequence: Array[Key] = []
+	
 	
 	func _init(_type: ComboType) -> void:
 		name = ComboType.keys()[_type].capitalize()
@@ -186,6 +202,7 @@ class Combo:
 					KEY_J, KEY_K, KEY_L, KEY_SEMICOLON,
 				]
 	
+	
 	func sequence_matches(played_sequence: Array[Key]) -> bool:
 		var combo_sequence_size: int = combo_sequence.size()
 		 
@@ -198,5 +215,6 @@ class Combo:
 		)
 		
 		return combo_sequence == sliced
+
 
 #endregion
