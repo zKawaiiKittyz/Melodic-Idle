@@ -1,11 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://dhwj74og5vhbq"]
+[gd_scene load_steps=11 format=3 uid="uid://dhwj74og5vhbq"]
 
 [ext_resource type="Script" uid="uid://c8mvylg0g5q2k" path="res://Scripts/main.gd" id="1_o5qli"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_ig7tw"]
 
 [sub_resource type="Gradient" id="Gradient_0xm2m"]
-colors = PackedColorArray(0.262996, 0.917427, 0.912171, 1, 0.388235, 0.992157, 0.905882, 0)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_h2yge"]
 gradient = SubResource("Gradient_0xm2m")
@@ -20,13 +20,30 @@ curve = SubResource("Curve_1bvp3")
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_7mycd"]
 particle_flag_disable_z = true
 spread = 180.0
-initial_velocity_min = 150.0
+initial_velocity_min = 100.0
 initial_velocity_max = 250.0
 gravity = Vector3(0, 0, 0)
-scale_min = 30.0
-scale_max = 77.92
+scale_min = 20.0
+scale_max = 50.0
 scale_curve = SubResource("CurveTexture_lquwl")
 color_ramp = SubResource("GradientTexture1D_h2yge")
+
+[sub_resource type="Gradient" id="Gradient_o5qli"]
+colors = PackedColorArray(1, 0.843137, 0, 1, 1, 0.843137, 0, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_0wfyh"]
+gradient = SubResource("Gradient_o5qli")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_sugp2"]
+particle_flag_disable_z = true
+spread = 180.0
+initial_velocity_min = 300.0
+initial_velocity_max = 500.0
+gravity = Vector3(0, 0, 0)
+scale_min = 50.0
+scale_max = 100.0
+scale_curve = SubResource("CurveTexture_lquwl")
+color_ramp = SubResource("GradientTexture1D_0wfyh")
 
 [node name="Main" type="Node"]
 script = ExtResource("1_o5qli")
@@ -62,11 +79,20 @@ size_flags_vertical = 4
 [node name="KeypressParticles" type="GPUParticles2D" parent="CanvasLayer/CenterScreen"]
 unique_name_in_owner = true
 emitting = false
-amount = 300
+amount = 250
 texture = SubResource("CanvasTexture_ig7tw")
 lifetime = 0.8
 one_shot = true
 process_material = SubResource("ParticleProcessMaterial_7mycd")
+
+[node name="ComboUnlockParticles" type="GPUParticles2D" parent="CanvasLayer/CenterScreen"]
+unique_name_in_owner = true
+emitting = false
+amount = 500
+texture = SubResource("CanvasTexture_ig7tw")
+lifetime = 0.8
+one_shot = true
+process_material = SubResource("ParticleProcessMaterial_sugp2")
 
 [node name="UpgradesDisplay" type="VBoxContainer" parent="CanvasLayer"]
 unique_name_in_owner = true

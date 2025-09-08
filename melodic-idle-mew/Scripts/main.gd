@@ -38,11 +38,13 @@ const SAVE_PATH: String = "user://savegame.cfg"
 var harmony_per_second: float = 1.0
 var sequence: Array[Key] = []
 var combos: Array[Combo] = []
+var current_instrument_color: Color = Color.WHITE
 var harmony: float = 0.0:
 	set = set_harmony
 
 @onready var harmony_label: Label = %HarmonyLabel
 @onready var keypress_particles: GPUParticles2D = %KeypressParticles
+@onready var combo_unlock_particles: GPUParticles2D = %ComboUnlockParticles
 @onready var fps_label: Label = %FPSLabel
 @onready var upgrades_display: VBoxContainer = %UpgradesDisplay
 
@@ -174,12 +176,14 @@ func _trigger_combo(combo: Combo) -> void:
 	harmony -= combo.cost
 	harmony_per_second += combo.reward
 	combo.unlocked = true
+	current_instrument_color = combo.color
+	combo_unlock_particles.emitting = true
 	print("Unlocked %s!" % combo.name)
 	_update_fps_label()
 
 
 func _play_particle_effect() -> void:
-	#keypress_particles.global_position = get_viewport_rect().size / 2.0
+	keypress_particles.modulate = current_instrument_color
 	keypress_particles.emitting = true
 
 
@@ -226,6 +230,7 @@ func save_game() -> void:
 
 	config.set_value("PlayerData", "harmony", harmony)
 	config.set_value("PlayerData", "harmony_per_second", harmony_per_second)
+	config.set_value("PlayerData", "instrument_color", current_instrument_color)
 
 	for combo: Combo in combos:
 		var section = "Combo_%s" % combo.name
@@ -250,6 +255,7 @@ func load_game() -> void:
 
 	harmony = config.get_value("PlayerData", "harmony", 0.0)
 	harmony_per_second = config.get_value("PlayerData", "harmony_per_second", 1.0)
+	
 
 	for combo: Combo in combos:
 		var section = "Combo_%s" % combo.name
@@ -271,6 +277,7 @@ class Combo:
 	var unlocked: bool = false
 	var combo_sequence: Array[Key] = []
 	var hint: String
+	var color: Color
 	
 	
 	func _init(_type: ComboType) -> void:
@@ -282,16 +289,19 @@ class Combo:
 				reward = 5
 				combo_sequence = [KEY_A, KEY_S, KEY_D, KEY_F]
 				hint = "A S _ _"
+				color = Color.SKY_BLUE
 			ComboType.PIANO:
 				cost = 250
 				reward = 25
 				combo_sequence = [KEY_L, KEY_K, KEY_J, KEY_SEMICOLON]
 				hint = "L K _ ;"
+				color = Color.GOLD
 			ComboType.ORGAN:
 				cost = 1000
 				reward = 150
 				combo_sequence = [KEY_A, KEY_D, KEY_L, KEY_J]
 				hint = "A _ L _"
+				color = Color.MEDIUM_PURPLE
 			ComboType.SCHLONGO:
 				cost = 5000
 				reward = 600
@@ -300,6 +310,7 @@ class Combo:
 					KEY_J, KEY_K, KEY_L, KEY_SEMICOLON,
 				]
 				hint = "A S D F _ _ _ ;"
+				color = Color.CRIMSON
 	
 	
 	## Checks whether this combo contains the player's played sequence
