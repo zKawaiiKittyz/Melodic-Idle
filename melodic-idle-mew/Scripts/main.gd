@@ -33,6 +33,7 @@ const INPUT_KEYS: Dictionary[StringName, Key] = {
 }
 const SOUND_PLAYER_SCENE: PackedScene = preload("uid://nmbacrjhvq4e")
 const UPGRADE_DISPLAY_ROW_SCENE: PackedScene = preload("uid://78mqrogxb8mt")
+const SAVE_PATH: String = "user://savegame.cfg"
 
 var harmony_per_second: float = 1.0
 var sequence: Array[Key] = []
@@ -50,10 +51,22 @@ var harmony: float = 0.0:
 
 
 func _ready() -> void:
+	get_tree().root.close_requested.connect(save_game)
+
+	var autosave_timer := Timer.new()
+	autosave_timer.name = "AutosaveTimer"
+	autosave_timer.wait_time = 30.0 
+	autosave_timer.timeout.connect(save_game)
+	add_child(autosave_timer)
+	autosave_timer.start()
+
 	_setup_harmony_label()
 	_create_combos()
+
 	_create_upgrade_rows()
-	_update_upgrades_display()
+
+	load_game() 
+
 	harmony_changed.connect(_update_upgrades_display)
 	_update_fps_label()
 
@@ -199,6 +212,50 @@ func _update_upgrades_display() -> void:
 				row.modulate = Color(0.7, 1.0, 0.7) 
 			else:
 				row.modulate = Color(0.5, 0.5, 0.5) 
+
+
+#endregion
+
+
+#region SaveLoad
+
+
+func save_game() -> void:
+	print("Saving game...")
+	var config = ConfigFile.new()
+
+	config.set_value("PlayerData", "harmony", harmony)
+	config.set_value("PlayerData", "harmony_per_second", harmony_per_second)
+
+	for combo: Combo in combos:
+		var section = "Combo_%s" % combo.name
+		config.set_value(section, "unlocked", combo.unlocked)
+
+	var error = config.save(SAVE_PATH)
+	if error != OK:
+		print("Error saving game!")
+
+func load_game() -> void:
+	if not FileAccess.file_exists(SAVE_PATH):
+		print("No save file found.")
+		return
+
+	print("Loading game...")
+	var config = ConfigFile.new()
+
+	var error = config.load(SAVE_PATH)
+	if error != OK:
+		print("Error loading game!")
+		return
+
+	harmony = config.get_value("PlayerData", "harmony", 0.0)
+	harmony_per_second = config.get_value("PlayerData", "harmony_per_second", 1.0)
+
+	for combo: Combo in combos:
+		var section = "Combo_%s" % combo.name
+		combo.unlocked = config.get_value(section, "unlocked", false)
+
+	_update_upgrades_display()
 
 
 #endregion
