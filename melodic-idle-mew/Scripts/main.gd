@@ -52,7 +52,9 @@ var harmony: float = 0.0:
 func _ready() -> void:
 	_setup_harmony_label()
 	_create_combos()
-	_populate_upgrades_display()
+	_create_upgrade_rows()
+	_update_upgrades_display()
+	harmony_changed.connect(_update_upgrades_display)
 	_update_fps_label()
 
 
@@ -160,6 +162,7 @@ func _trigger_combo(combo: Combo) -> void:
 	harmony_per_second += combo.reward
 	combo.unlocked = true
 	print("Unlocked %s!" % combo.name)
+	_update_fps_label()
 
 
 func _play_particle_effect() -> void:
@@ -167,15 +170,35 @@ func _play_particle_effect() -> void:
 	keypress_particles.emitting = true
 
 
-func _populate_upgrades_display() -> void:
-	for combo: Combo in combos:
-		var row = UPGRADE_DISPLAY_ROW_SCENE.instantiate()
-
-		row.get_node("%InstrumentNameLabel").text = combo.name
-		row.get_node("%CostLabel").text = "Cost: %s" % combo.cost
-		row.get_node("%RewardLabel").text = "+%s/s" % combo.reward
-
+func _create_upgrade_rows() -> void:
+	for combo in combos:
+		var row: Control = UPGRADE_DISPLAY_ROW_SCENE.instantiate()
 		upgrades_display.add_child(row)
+
+
+func _update_upgrades_display() -> void:
+	for i in combos.size():
+		var combo: Combo = combos[i]
+		var row = upgrades_display.get_child(i)
+
+		var name_label = row.get_node("%InstrumentNameLabel")
+		var hint_label = row.get_node("%HintLabel")
+		var cost_label = row.get_node("%CostLabel")
+
+		if combo.unlocked:
+			name_label.text = combo.name
+			hint_label.text = "UNLOCKED"
+			cost_label.text = "" 
+			row.modulate = Color(1.0, 1.0, 1.0) 
+		else:
+			name_label.text = "?????????"
+			hint_label.text = combo.hint
+			cost_label.text = "Cost: %s" % combo.cost
+
+			if harmony >= combo.cost:
+				row.modulate = Color(0.7, 1.0, 0.7) 
+			else:
+				row.modulate = Color(0.5, 0.5, 0.5) 
 
 
 #endregion
@@ -190,6 +213,7 @@ class Combo:
 	var reward: int
 	var unlocked: bool = false
 	var combo_sequence: Array[Key] = []
+	var hint: String
 	
 	
 	func _init(_type: ComboType) -> void:
@@ -200,14 +224,17 @@ class Combo:
 				cost = 50
 				reward = 5
 				combo_sequence = [KEY_A, KEY_S, KEY_D, KEY_F]
+				hint = "A S _ _"
 			ComboType.PIANO:
 				cost = 250
 				reward = 25
 				combo_sequence = [KEY_L, KEY_K, KEY_J, KEY_SEMICOLON]
+				hint = "L K _ ;"
 			ComboType.ORGAN:
 				cost = 1000
 				reward = 150
 				combo_sequence = [KEY_A, KEY_D, KEY_L, KEY_J]
+				hint = "A _ L _"
 			ComboType.SCHLONGO:
 				cost = 5000
 				reward = 600
@@ -215,6 +242,7 @@ class Combo:
 					KEY_A, KEY_S, KEY_D, KEY_F, 
 					KEY_J, KEY_K, KEY_L, KEY_SEMICOLON,
 				]
+				hint = "A S D F _ _ _ ;"
 	
 	
 	## Checks whether this combo contains the player's played sequence
