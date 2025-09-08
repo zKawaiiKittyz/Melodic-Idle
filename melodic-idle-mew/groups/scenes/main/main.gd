@@ -288,6 +288,7 @@ func load_game() -> void:
 	
 	harmony = config.get_value("PlayerData", "harmony", 0.0)
 	harmony_per_second = config.get_value("PlayerData", "harmony_per_second", 1.0)
+	current_instrument_color = config.get_value("PlayerData", "instrument_color", Color.WHITE)
 	
 	for _combo: Combo in Combo.list:
 		var section: String = "Combo_%s" % _combo.type

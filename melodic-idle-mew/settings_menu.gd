@@ -17,10 +17,12 @@ func _ready() -> void:
 
 func _on_volume_changed(value: float) -> void:
 	AudioServer.set_bus_volume_db(AudioServer.get_bus_index("SFX"), linear_to_db(value))
+	Global.save_settings()
 
 
 func _on_particles_toggled(is_on: bool) -> void:
 	Global.are_particles_enabled = is_on
+	Global.save_settings()
 
 
 func _on_reset_save_pressed() -> void:
