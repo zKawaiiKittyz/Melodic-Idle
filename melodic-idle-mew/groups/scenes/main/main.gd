@@ -204,6 +204,7 @@ func _trigger_combo(combo: Combo) -> void:
 
 
 func _play_particle_effect() -> void:
+	if not Global.are_particles_enabled: return
 	keypress_particles.modulate = current_instrument_color
 	keypress_particles.emitting = true
 
