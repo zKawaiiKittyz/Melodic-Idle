@@ -4,22 +4,16 @@ extends Node
 
 signal harmony_changed
 
-enum ComboType {
-	FLUTE,
-	PIANO,
-	ORGAN,
-	SCHLONGO,
-}
 const MAX_SEQUENCE_LENGTH: int = 8
 const KEY_SOUNDS: Dictionary[Key, Resource] = {
-	KEY_A: preload("res://sounds/c4.ogg"),
-	KEY_S: preload("res://sounds/d4.ogg"),
-	KEY_D: preload("res://sounds/e4.ogg"),
-	KEY_F: preload("res://sounds/f4.ogg"),
-	KEY_J: preload("res://sounds/g4.ogg"),
-	KEY_K: preload("res://sounds/a4.ogg"),
-	KEY_L: preload("res://sounds/b4.ogg"),
-	KEY_SEMICOLON: preload("res://sounds/c5.ogg"),
+	KEY_A: preload("uid://c2iyxxlkl8dwi"),
+	KEY_S: preload("uid://dw3yrejesx1k3"),
+	KEY_D: preload("uid://cird6olpb5uf2"),
+	KEY_F: preload("uid://ccaw1ma0won7n"),
+	KEY_J: preload("uid://8qirlxdnt54"),
+	KEY_K: preload("uid://pdpj6npijygl"),
+	KEY_L: preload("uid://br7br87ricq5x"),
+	KEY_SEMICOLON: preload("uid://br7br87ricq5x"),
 }
 const INPUT_KEYS: Dictionary[StringName, Key] = {
 	&"A": KEY_A,
@@ -31,13 +25,13 @@ const INPUT_KEYS: Dictionary[StringName, Key] = {
 	&"L": KEY_L,
 	&";": KEY_SEMICOLON,
 }
-const SOUND_PLAYER_SCENE: PackedScene = preload("uid://nmbacrjhvq4e")
-const UPGRADE_DISPLAY_ROW_SCENE: PackedScene = preload("uid://78mqrogxb8mt")
+const SOUND_PLAYER_SCENE: PackedScene = preload("uid://dogohd77h1fxg")
 const SAVE_PATH: String = "user://savegame.cfg"
+
+static var instance: Main ## A globally-accessible reference to Main
 
 var harmony_per_second: float = 1.0
 var sequence: Array[Key] = []
-var combos: Array[Combo] = []
 var current_instrument_color: Color = Color.WHITE
 var harmony: float = 0.0:
 	set = set_harmony
@@ -49,39 +43,46 @@ var harmony: float = 0.0:
 @onready var upgrades_display: VBoxContainer = %UpgradesDisplay
 
 
+#region Static
+
+
+static func get_harmony() -> float:
+	return instance.harmony
+
+
+#endregion
+
+
 #region Ready
+
+
+func _init() -> void:
+	instance = self
 
 
 func _ready() -> void:
 	get_tree().root.close_requested.connect(save_game)
-
+	
 	var autosave_timer := Timer.new()
 	autosave_timer.name = "AutosaveTimer"
 	autosave_timer.wait_time = 30.0 
 	autosave_timer.timeout.connect(save_game)
 	add_child(autosave_timer)
 	autosave_timer.start()
-
+	
 	_setup_harmony_label()
-	_create_combos()
-
-	_create_upgrade_rows()
-
+	Combo.create_combos()
+	
+	UpgradeDisplayRow.create_upgrade_rows()
+	
 	load_game() 
-
-	harmony_changed.connect(_update_upgrades_display)
+	
 	_update_fps_label()
 
 
 func _setup_harmony_label() -> void:
 	harmony_changed.connect(_update_harmony_label)
 	_update_harmony_label()
-
-
-func _create_combos() -> void:
-	for combo_type: ComboType in ComboType.values():
-		var new_combo: Combo = Combo.new(combo_type)
-		combos.append(new_combo)
 
 
 #endregion
@@ -141,7 +142,7 @@ func _add_to_sequence(key: Key) -> void:
 	while sequence.size() > MAX_SEQUENCE_LENGTH:
 		sequence.remove_at(0)
 	
-	print("Current sequence: ", sequence.map(OS.get_keycode_string))
+	Log.pr("Current sequence:", sequence.map(OS.get_keycode_string))
 	
 	_play_key_sound(key)
 	_play_particle_effect()
@@ -157,18 +158,16 @@ func _play_key_sound(key: Key) -> void:
 
 
 func _check_for_combo():
-	for combo: Combo in combos:
+	for combo: Combo in Combo.list:
 		if combo.sequence_matches(sequence):
-			print("%s combo!" % combo.name)
+			Log.pr(combo.name, "combo!")
 			
 			var can_trigger_combo: bool = (
-				not combo.unlocked
-				and harmony >= combo.cost
-			)
+					not combo.unlocked
+					and harmony >= combo.cost)
 			
 			if can_trigger_combo:
 				_trigger_combo(combo)
-				
 				break
 
 
@@ -178,44 +177,13 @@ func _trigger_combo(combo: Combo) -> void:
 	combo.unlocked = true
 	current_instrument_color = combo.color
 	combo_unlock_particles.emitting = true
-	print("Unlocked %s!" % combo.name)
+	Log.pr("Unlocked %s!" % combo.name)
 	_update_fps_label()
 
 
 func _play_particle_effect() -> void:
 	keypress_particles.modulate = current_instrument_color
 	keypress_particles.emitting = true
-
-
-func _create_upgrade_rows() -> void:
-	for combo in combos:
-		var row: Control = UPGRADE_DISPLAY_ROW_SCENE.instantiate()
-		upgrades_display.add_child(row)
-
-
-func _update_upgrades_display() -> void:
-	for i in combos.size():
-		var combo: Combo = combos[i]
-		var row = upgrades_display.get_child(i)
-
-		var name_label = row.get_node("%InstrumentNameLabel")
-		var hint_label = row.get_node("%HintLabel")
-		var cost_label = row.get_node("%CostLabel")
-
-		if combo.unlocked:
-			name_label.text = combo.name
-			hint_label.text = "UNLOCKED"
-			cost_label.text = "" 
-			row.modulate = Color(1.0, 1.0, 1.0) 
-		else:
-			name_label.text = "?????????"
-			hint_label.text = combo.hint
-			cost_label.text = "Cost: %s" % combo.cost
-
-			if harmony >= combo.cost:
-				row.modulate = Color(0.7, 1.0, 0.7) 
-			else:
-				row.modulate = Color(0.5, 0.5, 0.5) 
 
 
 #endregion
@@ -225,107 +193,49 @@ func _update_upgrades_display() -> void:
 
 
 func save_game() -> void:
-	print("Saving game...")
-	var config = ConfigFile.new()
-
+	Log.pr("Saving game...")
+	
+	var start_time: int = Time.get_ticks_msec()
+	var config := ConfigFile.new()
+	
 	config.set_value("PlayerData", "harmony", harmony)
 	config.set_value("PlayerData", "harmony_per_second", harmony_per_second)
 	config.set_value("PlayerData", "instrument_color", current_instrument_color)
-
-	for combo: Combo in combos:
-		var section = "Combo_%s" % combo.name
+	
+	for combo: Combo in Combo.list:
+		var section: String = "Combo_%s" % combo.type
 		config.set_value(section, "unlocked", combo.unlocked)
-
-	var error = config.save(SAVE_PATH)
+	
+	var error := config.save(SAVE_PATH)
 	if error != OK:
-		print("Error saving game!")
+		Log.pr("Error saving game!")
+		return
+	
+	# Using start_time, this tells you how long this function took! (useful on bigger functions)
+	Log.pr("Game saved in", Time.get_ticks_msec() - start_time, "ms")
+
 
 func load_game() -> void:
 	if not FileAccess.file_exists(SAVE_PATH):
-		print("No save file found.")
+		Log.pr("No save file found.")
 		return
-
-	print("Loading game...")
-	var config = ConfigFile.new()
-
-	var error = config.load(SAVE_PATH)
+	
+	Log.pr("Loading game...")
+	var config := ConfigFile.new()
+	
+	var error := config.load(SAVE_PATH)
 	if error != OK:
-		print("Error loading game!")
+		Log.pr("Error loading game!")
 		return
-
+	
 	harmony = config.get_value("PlayerData", "harmony", 0.0)
 	harmony_per_second = config.get_value("PlayerData", "harmony_per_second", 1.0)
 	
-
-	for combo: Combo in combos:
-		var section = "Combo_%s" % combo.name
+	for combo: Combo in Combo.list:
+		var section: String = "Combo_%s" % combo.type
 		combo.unlocked = config.get_value(section, "unlocked", false)
-
-	_update_upgrades_display()
-
-
-#endregion
-
-
-#region Sub-Classes
-
-
-class Combo:
-	var name: String
-	var cost: int
-	var reward: int
-	var unlocked: bool = false
-	var combo_sequence: Array[Key] = []
-	var hint: String
-	var color: Color
 	
-	
-	func _init(_type: ComboType) -> void:
-		name = ComboType.keys()[_type].capitalize()
-		
-		match _type:
-			ComboType.FLUTE:
-				cost = 50
-				reward = 5
-				combo_sequence = [KEY_A, KEY_S, KEY_D, KEY_F]
-				hint = "A S _ _"
-				color = Color.SKY_BLUE
-			ComboType.PIANO:
-				cost = 250
-				reward = 25
-				combo_sequence = [KEY_L, KEY_K, KEY_J, KEY_SEMICOLON]
-				hint = "L K _ ;"
-				color = Color.GOLD
-			ComboType.ORGAN:
-				cost = 1000
-				reward = 150
-				combo_sequence = [KEY_A, KEY_D, KEY_L, KEY_J]
-				hint = "A _ L _"
-				color = Color.MEDIUM_PURPLE
-			ComboType.SCHLONGO:
-				cost = 5000
-				reward = 600
-				combo_sequence = [
-					KEY_A, KEY_S, KEY_D, KEY_F, 
-					KEY_J, KEY_K, KEY_L, KEY_SEMICOLON,
-				]
-				hint = "A S D F _ _ _ ;"
-				color = Color.CRIMSON
-	
-	
-	## Checks whether this combo contains the player's played sequence
-	func sequence_matches(played_sequence: Array[Key]) -> bool:
-		var combo_sequence_size: int = combo_sequence.size()
-		 
-		if played_sequence.size() < combo_sequence_size:
-			return false
-		
-		var sliced: Array[Key] =played_sequence.slice(
-			-combo_sequence_size,
-			played_sequence.size()
-		)
-		
-		return combo_sequence == sliced
+	#_update_upgrades_display()
 
 
 #endregion

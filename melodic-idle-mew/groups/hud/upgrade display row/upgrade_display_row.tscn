@@ -1,4 +1,6 @@
-[gd_scene format=3 uid="uid://78mqrogxb8mt"]
+[gd_scene load_steps=2 format=3 uid="uid://78mqrogxb8mt"]
+
+[ext_resource type="Script" uid="uid://dvv05fs1cbwk1" path="res://groups/hud/upgrade display row/upgrade_display_row.gd" id="1_vrn6g"]
 
 [node name="UpgradeDisplayRow" type="Control"]
 custom_minimum_size = Vector2(300, 0)
@@ -8,6 +10,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_vrn6g")
 
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 1
@@ -21,19 +24,24 @@ grow_vertical = 2
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
+text = "1"
 
 [node name="HintLabel" type="Label" parent="HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.370364, 0.370364, 0.370364, 1)
 theme_override_font_sizes/font_size = 18
+text = "2"
 
 [node name="CostLabel" type="Label" parent="HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
+text = "3"
 
 [node name="RewardLabel" type="Label" parent="HBoxContainer"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
+text = "4"
