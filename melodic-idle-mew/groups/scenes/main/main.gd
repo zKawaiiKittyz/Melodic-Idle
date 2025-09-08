@@ -33,6 +33,7 @@ static var instance: Main ## A globally-accessible reference to Main
 var harmony_per_second: float = 1.0
 var sequence: Array[Key] = []
 var current_instrument_color: Color = Color.WHITE
+var sequence_tween: Tween
 var harmony: float = 0.0:
 	set = set_harmony
 
@@ -41,6 +42,8 @@ var harmony: float = 0.0:
 @onready var combo_unlock_particles: GPUParticles2D = %ComboUnlockParticles
 @onready var fps_label: Label = %FPSLabel
 @onready var upgrades_display: VBoxContainer = %UpgradesDisplay
+@onready var combo_reset_timer: Timer = %ComboResetTimer
+@onready var sequence_label: Label = %SequenceLabel
 
 
 #region Static
@@ -115,6 +118,21 @@ func _unhandled_key_input(event: InputEvent) -> void:
 			break
 
 
+func _on_combo_reset_timer_timeout() -> void:
+	if sequence.is_empty():
+		return
+	
+	var tween := create_tween()
+	tween.tween_property(sequence_label, "modulate", Color.CRIMSON, 0.2)
+	tween.tween_property(sequence_label, "modulate:a", 0.0, 0.3)
+	
+	await tween.finished
+	
+	print("Sequence reset due to timeout.")
+	sequence.clear()
+	_update_sequence_label()
+
+
 #endregion
 
 
@@ -143,10 +161,12 @@ func _add_to_sequence(key: Key) -> void:
 		sequence.remove_at(0)
 	
 	Log.pr("Current sequence:", sequence.map(OS.get_keycode_string))
+	_update_sequence_label()
 	
 	_play_key_sound(key)
 	_play_particle_effect()
 	_check_for_combo()
+	combo_reset_timer.start()
 
 
 func _play_key_sound(key: Key) -> void:
@@ -158,20 +178,22 @@ func _play_key_sound(key: Key) -> void:
 
 
 func _check_for_combo():
-	for combo: Combo in Combo.list:
-		if combo.sequence_matches(sequence):
-			Log.pr(combo.name, "combo!")
+	for _combo: Combo in Combo.list:
+		if _combo.sequence_matches(sequence):
+			Log.pr(_combo.name, "combo!")
 			
 			var can_trigger_combo: bool = (
-					not combo.unlocked
-					and harmony >= combo.cost)
+					not _combo.unlocked
+					and harmony >= _combo.cost)
 			
 			if can_trigger_combo:
-				_trigger_combo(combo)
+				_trigger_combo(_combo)
 				break
 
 
 func _trigger_combo(combo: Combo) -> void:
+	combo_reset_timer.start()
+	_play_sequence_success_animation()
 	harmony -= combo.cost
 	harmony_per_second += combo.reward
 	combo.unlocked = true
@@ -184,6 +206,24 @@ func _trigger_combo(combo: Combo) -> void:
 func _play_particle_effect() -> void:
 	keypress_particles.modulate = current_instrument_color
 	keypress_particles.emitting = true
+
+
+func _update_sequence_label() -> void:
+	if is_instance_valid(sequence_tween):
+		sequence_tween.kill()
+	var sequence_as_strings = sequence.map(func(key_enum): return OS.get_keycode_string(key_enum))
+	sequence_label.text = " ".join(sequence_as_strings)
+
+	sequence_label.modulate = Color.WHITE
+
+
+func _play_sequence_success_animation() -> void:
+	if is_instance_valid(sequence_tween):
+		sequence_tween.kill()
+	
+	sequence_tween = create_tween()
+	sequence_tween.tween_property(sequence_label, "modulate", Color.GOLD, 0.15)
+	sequence_tween.tween_property(sequence_label, "modulate", Color.WHITE, 0.4)
 
 
 #endregion
@@ -202,9 +242,9 @@ func save_game() -> void:
 	config.set_value("PlayerData", "harmony_per_second", harmony_per_second)
 	config.set_value("PlayerData", "instrument_color", current_instrument_color)
 	
-	for combo: Combo in Combo.list:
-		var section: String = "Combo_%s" % combo.type
-		config.set_value(section, "unlocked", combo.unlocked)
+	for _combo: Combo in Combo.list:
+		var section: String = "Combo_%s" % _combo.type
+		config.set_value(section, "unlocked", _combo.unlocked)
 	
 	var error := config.save(SAVE_PATH)
 	if error != OK:
@@ -231,9 +271,9 @@ func load_game() -> void:
 	harmony = config.get_value("PlayerData", "harmony", 0.0)
 	harmony_per_second = config.get_value("PlayerData", "harmony_per_second", 1.0)
 	
-	for combo: Combo in Combo.list:
-		var section: String = "Combo_%s" % combo.type
-		combo.unlocked = config.get_value(section, "unlocked", false)
+	for _combo: Combo in Combo.list:
+		var section: String = "Combo_%s" % _combo.type
+		_combo.unlocked = config.get_value(section, "unlocked", false)
 	
 	#_update_upgrades_display()
 

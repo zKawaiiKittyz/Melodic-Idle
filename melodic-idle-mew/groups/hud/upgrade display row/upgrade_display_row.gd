@@ -14,7 +14,7 @@ var combo: Combo
 
 
 static func create_upgrade_rows() -> void:
-	for combo in Combo.list:
+	for _combo in Combo.list:
 		var row: UpgradeDisplayRow = UPGRADE_DISPLAY_ROW_SCENE.instantiate()
 		Main.instance.upgrades_display.add_child(row)
 

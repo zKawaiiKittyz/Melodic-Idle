@@ -1,6 +1,21 @@
-[gd_scene load_steps=11 format=3 uid="uid://dhwj74og5vhbq"]
+[gd_scene load_steps=16 format=3 uid="uid://dhwj74og5vhbq"]
 
 [ext_resource type="Script" uid="uid://c8mvylg0g5q2k" path="res://groups/scenes/main/main.gd" id="1_o5qli"]
+[ext_resource type="Shader" uid="uid://4m3hepw1esri" path="res://groups/scenes/main/main.gdshader" id="2_0nixb"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_u2crk"]
+shader = ExtResource("2_0nixb")
+
+[sub_resource type="Gradient" id="Gradient_0nixb"]
+colors = PackedColorArray(0.0723002, 0.322749, 0.313223, 1, 0.202367, 0.220611, 0.0103189, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_0nixb"]
+noise_type = 0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_s1l1a"]
+seamless = true
+color_ramp = SubResource("Gradient_0nixb")
+noise = SubResource("FastNoiseLite_0nixb")
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_ig7tw"]
 
@@ -48,6 +63,15 @@ color_ramp = SubResource("GradientTexture1D_0wfyh")
 [node name="Main" type="Node"]
 script = ExtResource("1_o5qli")
 
+[node name="TextureRect" type="TextureRect" parent="."]
+material = SubResource("ShaderMaterial_u2crk")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("NoiseTexture2D_s1l1a")
+
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="HarmonyLabel" type="Label" parent="CanvasLayer"]
@@ -63,6 +87,22 @@ text = "Harmony: 0"
 unique_name_in_owner = true
 offset_right = 40.0
 offset_bottom = 23.0
+
+[node name="SequenceLabel" type="Label" parent="CanvasLayer"]
+unique_name_in_owner = true
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -23.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 5
+theme_override_font_sizes/font_size = 40
 
 [node name="CenterScreen" type="Control" parent="CanvasLayer"]
 layout_mode = 3
@@ -101,3 +141,10 @@ offset_top = 25.0
 offset_right = 876.0
 offset_bottom = 65.0
 theme_override_constants/separation = 20
+
+[node name="ComboResetTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 1.5
+one_shot = true
+
+[connection signal="timeout" from="ComboResetTimer" to="." method="_on_combo_reset_timer_timeout"]
