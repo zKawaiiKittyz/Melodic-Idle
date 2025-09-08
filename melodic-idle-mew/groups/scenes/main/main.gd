@@ -146,7 +146,7 @@ func _update_fps_label() -> void:
 
 
 func _update_harmony_label() -> void:
-	harmony_label.text = "Harmony: %s" % str(harmony).pad_decimals(2)
+	harmony_label.text = "Harmony: %s" % format_number(harmony)
 
 
 func _increment_harmony(delta: float) -> void:
@@ -224,6 +224,23 @@ func _play_sequence_success_animation() -> void:
 	sequence_tween = create_tween()
 	sequence_tween.tween_property(sequence_label, "modulate", Color.GOLD, 0.15)
 	sequence_tween.tween_property(sequence_label, "modulate", Color.WHITE, 0.4)
+
+
+func format_number(num: float) -> String:
+	var s = "%d" % num 
+	var len = s.length()
+	if len <= 3:
+		return s
+	
+	var mod = len % 3
+	var res = ""
+	if mod != 0:
+		res += s.substr(0, mod) + ","
+	
+	for i in range(mod, len, 3):
+		res += s.substr(i, 3) + ","
+	
+	return res.left(res.length() - 1)
 
 
 #endregion

@@ -3,6 +3,7 @@ extends RefCounted
 
 
 enum Type {
+	TUTORIAL,
 	FLUTE,
 	PIANO,
 	ORGAN,
@@ -32,6 +33,12 @@ func _init(_type: Type) -> void:
 	name = Type.keys()[_type].capitalize()
 	
 	match _type:
+		Type.TUTORIAL:
+			cost = 10
+			reward = 1
+			combo_sequence = [KEY_A, KEY_S]
+			hint = "A S"
+			color = Color.LIGHT_GRAY
 		Type.FLUTE:
 			cost = 50
 			reward = 5
