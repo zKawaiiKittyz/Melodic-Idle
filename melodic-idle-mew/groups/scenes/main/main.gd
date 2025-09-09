@@ -37,6 +37,8 @@ var current_instrument_color: Color = Color.WHITE
 var sequence_tween: Tween
 var harmony: float = 0.0:
 	set = set_harmony
+var total_mastery_points: int = 0
+var mastery_points_on_reset: int = 0
 
 @onready var harmony_label: Label = %HarmonyLabel
 @onready var keypress_particles: GPUParticles2D = %KeypressParticles
@@ -47,6 +49,8 @@ var harmony: float = 0.0:
 @onready var sequence_label: Label = %SequenceLabel
 @onready var pause_menu = $PauseMenu
 @onready var offline_progress_popup = %OfflineProgressPopup
+@onready var mastery_label: Label = %MasteryLabel
+@onready var prestige_button: Button = %PrestigeButton
 
 
 #region Static
@@ -86,6 +90,8 @@ func _ready() -> void:
 	_update_fps_label()
 	
 	pause_menu.quit_requested.connect(quit_to_main_menu)
+	
+	prestige_button.pressed.connect(_on_prestige_button_pressed)
 
 
 func _setup_harmony_label() -> void:
@@ -114,6 +120,15 @@ func set_harmony(new_harmony: float) -> void:
 
 func _process(delta: float) -> void:
 	_increment_harmony(delta)
+	
+	if harmony > 1_000_000:
+		mastery_points_on_reset = floor(log(harmony) / log(100)) - 2
+		prestige_button.disabled = false
+		mastery_label.text = "Crescendo for +%s Mastery" % mastery_points_on_reset
+	else:
+		mastery_points_on_reset = 0
+		prestige_button.disabled = true
+		mastery_label.text = "Reach 1,000,000 Harmony"
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
@@ -155,7 +170,8 @@ func _update_harmony_label() -> void:
 
 
 func _increment_harmony(delta: float) -> void:
-	harmony += harmony_per_second * delta
+	var prestige_bonus = 1.0 + (total_mastery_points * 0.10)
+	harmony += (harmony_per_second * prestige_bonus) * delta
 
 
 func _add_to_sequence(key: Key) -> void:
@@ -270,6 +286,29 @@ func _spawn_falling_note(key_as_string: String) -> void:
 	add_child(note)
 
 
+func _on_prestige_button_pressed() -> void:
+	if mastery_points_on_reset <= 0:
+		return
+		
+	total_mastery_points += mastery_points_on_reset
+	
+	harmony = 0.0
+	harmony_per_second = 1.0
+	sequence.clear()
+	current_instrument_color = Color.WHITE
+	for _combo: Combo in Combo.list:
+		_combo.unlocked = false
+	
+	for node in get_children():
+		if node is RigidBody2D:
+			node.queue_free()
+	
+	
+	_update_sequence_label()
+	
+	save_game()
+
+
 #endregion
 
 
@@ -286,6 +325,7 @@ func save_game() -> void:
 	config.set_value("PlayerData", "harmony_per_second", harmony_per_second)
 	config.set_value("PlayerData", "instrument_color", current_instrument_color)
 	config.set_value("PlayerData", "last_session_time", Time.get_unix_time_from_system())
+	config.set_value("PlayerData", "total_mastery", total_mastery_points)
 	
 	for _combo: Combo in Combo.list:
 		var section: String = "Combo_%s" % _combo.type
@@ -323,6 +363,7 @@ func load_game() -> void:
 	harmony = config.get_value("PlayerData", "harmony", 0.0)
 	harmony_per_second = config.get_value("PlayerData", "harmony_per_second", 1.0)
 	current_instrument_color = config.get_value("PlayerData", "instrument_color", Color.WHITE)
+	total_mastery_points = config.get_value("PlayerData", "total_mastery", 0)
 	
 	var last_time = config.get_value("PlayerData", "last_session_time", 0)
 	if last_time > 0:

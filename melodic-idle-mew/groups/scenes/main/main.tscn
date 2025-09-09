@@ -76,6 +76,10 @@ material = SubResource("ShaderMaterial_u2crk")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = -171.0
+offset_top = -127.0
+offset_right = 1273.0
+offset_bottom = 676.0
 grow_horizontal = 2
 grow_vertical = 2
 texture = SubResource("NoiseTexture2D_s1l1a")
@@ -154,6 +158,22 @@ theme_override_constants/separation = 20
 [node name="OfflineProgressPopup" parent="CanvasLayer" instance=ExtResource("3_ejerb")]
 unique_name_in_owner = true
 visible = false
+
+[node name="MasteryLabel" type="Label" parent="CanvasLayer"]
+unique_name_in_owner = true
+offset_left = 7.0
+offset_top = 147.0
+offset_right = 47.0
+offset_bottom = 170.0
+
+[node name="PrestigeButton" type="Button" parent="CanvasLayer"]
+unique_name_in_owner = true
+offset_left = 4.0
+offset_top = 176.0
+offset_right = 162.0
+offset_bottom = 207.0
+text = "Perform Crescendo
+"
 
 [node name="ComboResetTimer" type="Timer" parent="."]
 unique_name_in_owner = true
