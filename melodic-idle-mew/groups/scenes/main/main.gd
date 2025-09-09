@@ -83,6 +83,8 @@ func _ready() -> void:
 	load_game() 
 	
 	_update_fps_label()
+	
+	pause_menu.quit_requested.connect(quit_to_main_menu)
 
 
 func _setup_harmony_label() -> void:
@@ -234,16 +236,16 @@ func _play_sequence_success_animation() -> void:
 
 func format_number(num: float) -> String:
 	var s = "%d" % num 
-	var len = s.length()
-	if len <= 3:
+	var str_len = s.length()
+	if str_len <= 3:
 		return s
 	
-	var mod = len % 3
+	var mod = str_len % 3
 	var res = ""
 	if mod != 0:
 		res += s.substr(0, mod) + ","
 	
-	for i in range(mod, len, 3):
+	for i in range(mod, str_len, 3):
 		res += s.substr(i, 3) + ","
 	
 	return res.left(res.length() - 1)
@@ -294,6 +296,12 @@ func save_game() -> void:
 	
 	# Using start_time, this tells you how long this function took! (useful on bigger functions)
 	Log.pr("Game saved in", Time.get_ticks_msec() - start_time, "ms")
+
+
+func quit_to_main_menu() -> void:
+	save_game()
+	get_tree().paused = false
+	get_tree().change_scene_to_file("uid://dwyv653jb45xi")
 
 
 func load_game() -> void:

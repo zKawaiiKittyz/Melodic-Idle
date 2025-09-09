@@ -1,5 +1,7 @@
 extends CanvasLayer
 
+signal quit_requested
+
 @onready var pause_buttons = %PauseButtons
 @onready var settings_view = %SettingsView
 @onready var volume_slider: HSlider = %VolumeSlider
@@ -8,7 +10,7 @@ extends CanvasLayer
 func _ready() -> void:
 	%ResumeButton.pressed.connect(on_resume_pressed)
 	%SettingsButton.pressed.connect(on_settings_pressed)
-	%QuitButton.pressed.connect(func(): get_tree().paused = false; get_tree().change_scene_to_file("uid://dwyv653jb45xi"))
+	%QuitButton.pressed.connect(_on_quit_button_pressed)
 	
 	settings_view.get_node("%BackButton").pressed.connect(on_settings_back_pressed)
 	%ResetSaveButton.pressed.connect(_on_reset_save_pressed)
@@ -63,3 +65,7 @@ func _on_reset_save_pressed() -> void:
 	if dir.file_exists("savegame.cfg"):
 		dir.remove("savegame.cfg")
 		print("Save data reset!")
+
+
+func _on_quit_button_pressed() -> void:
+	quit_requested.emit()
