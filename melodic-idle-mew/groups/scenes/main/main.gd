@@ -44,6 +44,7 @@ var harmony: float = 0.0:
 @onready var upgrades_display: VBoxContainer = %UpgradesDisplay
 @onready var combo_reset_timer: Timer = %ComboResetTimer
 @onready var sequence_label: Label = %SequenceLabel
+@onready var pause_menu = $PauseMenu
 
 
 #region Static
@@ -242,6 +243,12 @@ func format_number(num: float) -> String:
 		res += s.substr(i, 3) + ","
 	
 	return res.left(res.length() - 1)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		get_tree().paused = true 
+		pause_menu.show()
 
 
 #endregion

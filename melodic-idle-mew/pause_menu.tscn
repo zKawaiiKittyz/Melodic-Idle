@@ -1,0 +1,95 @@
+[gd_scene load_steps=2 format=3 uid="uid://duodi1u05b445"]
+
+[ext_resource type="Script" uid="uid://b1j6vtvokeft0" path="res://pause_menu.gd" id="1_hdmo1"]
+
+[node name="PauseMenu" type="CanvasLayer"]
+script = ExtResource("1_hdmo1")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.462745)
+
+[node name="PauseButtons" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -77.0
+offset_top = -50.5
+offset_right = 77.0
+offset_bottom = 50.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+
+[node name="ResumeButton" type="Button" parent="PauseButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Resume"
+
+[node name="SettingsButton" type="Button" parent="PauseButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Settings
+"
+
+[node name="QuitButton" type="Button" parent="PauseButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Quit to Main Menu"
+
+[node name="SettingsView" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SettingsLabel" type="Label" parent="SettingsView"]
+layout_mode = 2
+text = "Settings"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="SettingsView"]
+layout_mode = 2
+
+[node name="VolumeLabel" type="Label" parent="SettingsView/HBoxContainer"]
+layout_mode = 2
+text = "Volume"
+
+[node name="VolumeSlider" type="HSlider" parent="SettingsView/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="SettingsView"]
+layout_mode = 2
+
+[node name="ParticlesLabel" type="Label" parent="SettingsView/HBoxContainer2"]
+layout_mode = 2
+text = "Particles"
+
+[node name="ParticlesCheckBox" type="CheckBox" parent="SettingsView/HBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ResetSaveButton" type="Button" parent="SettingsView"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Reset Save Data"
+
+[node name="BackButton" type="Button" parent="SettingsView"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Back"
+
+[connection signal="pressed" from="PauseButtons/ResumeButton" to="." method="_on_resume_button_pressed"]
+[connection signal="pressed" from="PauseButtons/SettingsButton" to="." method="_on_settings_button_pressed"]
+[connection signal="pressed" from="PauseButtons/QuitButton" to="." method="_on_quit_button_pressed"]

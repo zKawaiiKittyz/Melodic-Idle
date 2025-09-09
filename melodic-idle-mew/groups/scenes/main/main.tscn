@@ -1,7 +1,8 @@
-[gd_scene load_steps=16 format=3 uid="uid://dhwj74og5vhbq"]
+[gd_scene load_steps=17 format=3 uid="uid://dhwj74og5vhbq"]
 
 [ext_resource type="Script" uid="uid://c8mvylg0g5q2k" path="res://groups/scenes/main/main.gd" id="1_o5qli"]
 [ext_resource type="Shader" uid="uid://4m3hepw1esri" path="res://groups/scenes/main/main.gdshader" id="2_0nixb"]
+[ext_resource type="PackedScene" uid="uid://duodi1u05b445" path="res://pause_menu.tscn" id="3_u2crk"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_u2crk"]
 shader = ExtResource("2_0nixb")
@@ -147,5 +148,9 @@ theme_override_constants/separation = 20
 unique_name_in_owner = true
 wait_time = 1.5
 one_shot = true
+
+[node name="PauseMenu" parent="." instance=ExtResource("3_u2crk")]
+process_mode = 2
+visible = false
 
 [connection signal="timeout" from="ComboResetTimer" to="." method="_on_combo_reset_timer_timeout"]
