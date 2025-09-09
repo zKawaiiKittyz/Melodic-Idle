@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://8d64atjpd8kh"]
 
-[ext_resource type="Script" uid="uid://mycndr7j5a8r" path="res://settings_menu.gd" id="1_ufg0w"]
+[ext_resource type="Script" uid="uid://mycndr7j5a8r" path="res://groups/hud/settings menu/settings_menu.gd" id="1_ufg0w"]
 
 [node name="SettingsMenu" type="Control"]
 layout_mode = 3
@@ -56,6 +56,7 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "Back"
 
-[connection signal="toggled" from="VBoxContainer/HBoxContainer2/ParticlesCheckBox" to="." method="_on_particles_checkbox_toggled"]
-[connection signal="pressed" from="VBoxContainer/ResetSaveButton" to="." method="_on_reset_save_button_pressed"]
+[connection signal="value_changed" from="VBoxContainer/HBoxContainer/VolumeSlider" to="." method="_on_volume_changed"]
+[connection signal="toggled" from="VBoxContainer/HBoxContainer2/ParticlesCheckBox" to="." method="_on_particles_toggled"]
+[connection signal="pressed" from="VBoxContainer/ResetSaveButton" to="." method="_on_reset_save_pressed"]
 [connection signal="pressed" from="VBoxContainer/BackButton" to="." method="_on_back_button_pressed"]

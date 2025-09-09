@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://dfwfg5401ktkn"]
 
-[ext_resource type="Script" uid="uid://6sbh03l20sro" path="res://falling_note.gd" id="1_isnp3"]
+[ext_resource type="Script" uid="uid://6sbh03l20sro" path="res://groups/sound player/notes/falling_note.gd" id="1_isnp3"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ogjeb"]
 radius = 15.0
@@ -12,8 +12,11 @@ script = ExtResource("1_isnp3")
 shape = SubResource("CircleShape2D_ogjeb")
 
 [node name="Label" type="Label" parent="."]
-offset_right = 40.0
-offset_bottom = 23.0
+offset_left = -19.0
+offset_top = -17.0
+offset_right = 21.0
+offset_bottom = 18.0
+grow_horizontal = 2
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
 theme_override_font_sizes/font_size = 25

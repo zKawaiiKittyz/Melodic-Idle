@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://duodi1u05b445"]
 
-[ext_resource type="Script" uid="uid://b1j6vtvokeft0" path="res://pause_menu.gd" id="1_hdmo1"]
+[ext_resource type="Script" uid="uid://b1j6vtvokeft0" path="res://groups/hud/pause menu/pause_menu.gd" id="1_hdmo1"]
 
 [node name="PauseMenu" type="CanvasLayer"]
 script = ExtResource("1_hdmo1")
@@ -93,3 +93,7 @@ text = "Back"
 [connection signal="pressed" from="PauseButtons/ResumeButton" to="." method="_on_resume_button_pressed"]
 [connection signal="pressed" from="PauseButtons/SettingsButton" to="." method="_on_settings_button_pressed"]
 [connection signal="pressed" from="PauseButtons/QuitButton" to="." method="_on_quit_button_pressed"]
+[connection signal="value_changed" from="SettingsView/HBoxContainer/VolumeSlider" to="." method="_on_volume_changed"]
+[connection signal="toggled" from="SettingsView/HBoxContainer2/ParticlesCheckBox" to="." method="_on_particles_toggled"]
+[connection signal="pressed" from="SettingsView/ResetSaveButton" to="." method="_on_reset_save_button_pressed"]
+[connection signal="pressed" from="SettingsView/BackButton" to="." method="_on_back_button_pressed"]

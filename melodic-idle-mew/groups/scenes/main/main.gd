@@ -211,7 +211,7 @@ func _trigger_combo(combo: Combo) -> void:
 
 
 func _play_particle_effect() -> void:
-	if not Global.are_particles_enabled: return
+	if not Settings.are_particles_enabled: return
 	keypress_particles.modulate = current_instrument_color
 	keypress_particles.emitting = true
 
@@ -301,7 +301,8 @@ func save_game() -> void:
 func quit_to_main_menu() -> void:
 	save_game()
 	get_tree().paused = false
-	get_tree().change_scene_to_file("uid://dwyv653jb45xi")
+	get_tree().change_scene_to_file(MainMenu.UID)
+	queue_free()
 
 
 func load_game() -> void:

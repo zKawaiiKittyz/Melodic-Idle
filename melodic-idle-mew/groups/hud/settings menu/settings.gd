@@ -1,16 +1,21 @@
 extends Node
 
-const SETTINGS_PATH = "user://settings.cfg"
+
+const SETTINGS_PATH: String = "user://settings.cfg"
+
 var are_particles_enabled: bool = true
+
 
 func _ready() -> void:
 	load_settings()
+
 
 func save_settings() -> void:
 	var config = ConfigFile.new()
 	config.set_value("Settings", "sfx_volume_db", AudioServer.get_bus_volume_db(AudioServer.get_bus_index("SFX")))
 	config.set_value("Settings", "particles_enabled", are_particles_enabled)
 	config.save(SETTINGS_PATH)
+
 
 func load_settings() -> void:
 	var config = ConfigFile.new()

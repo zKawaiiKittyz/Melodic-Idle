@@ -11,6 +11,7 @@ enum Type {
 }
 
 static var list: Array[Combo]
+static var loaded: bool = false
 
 var type: Type
 var name: String
@@ -23,6 +24,11 @@ var color: Color
 
 
 static func create_combos() -> void:
+	if loaded:
+		return
+	
+	loaded = true
+	
 	for combo_type: Type in Type.values():
 		var new_combo: Combo = Combo.new(combo_type)
 		list.append(new_combo)

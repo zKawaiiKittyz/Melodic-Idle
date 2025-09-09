@@ -15,9 +15,13 @@ run/main_scene="uid://dwyv653jb45xi"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://groups/hud/icon.svg"
 
+[audio]
+
+buses/default_bus_layout="uid://b57idfqwu4y5e"
+
 [autoload]
 
-Global="*res://global.gd"
+Settings="*res://groups/hud/settings menu/settings.gd"
 
 [editor_plugins]
 
