@@ -324,8 +324,7 @@ func load_game() -> void:
 	for _combo: Combo in Combo.list:
 		var section: String = "Combo_%s" % _combo.type
 		_combo.unlocked = config.get_value(section, "unlocked", false)
-	
-	#_update_upgrades_display()
+
 
 
 #endregion
