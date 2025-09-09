@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://dhwj74og5vhbq"]
+[gd_scene load_steps=19 format=3 uid="uid://dhwj74og5vhbq"]
 
 [ext_resource type="Script" uid="uid://c8mvylg0g5q2k" path="res://groups/scenes/main/main.gd" id="1_o5qli"]
 [ext_resource type="Shader" uid="uid://4m3hepw1esri" path="res://groups/scenes/main/main.gdshader" id="2_0nixb"]
@@ -61,7 +61,13 @@ scale_max = 100.0
 scale_curve = SubResource("CurveTexture_lquwl")
 color_ramp = SubResource("GradientTexture1D_0wfyh")
 
-[node name="Main" type="Node"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_u2crk"]
+size = Vector2(1179, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ejerb"]
+size = Vector2(20, 464)
+
+[node name="Main" type="Node2D"]
 script = ExtResource("1_o5qli")
 
 [node name="TextureRect" type="TextureRect" parent="."]
@@ -152,5 +158,19 @@ one_shot = true
 [node name="PauseMenu" parent="." instance=ExtResource("3_u2crk")]
 process_mode = 2
 visible = false
+
+[node name="WorldBoundary" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldBoundary"]
+position = Vector2(574.5, 657)
+shape = SubResource("RectangleShape2D_u2crk")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="WorldBoundary"]
+position = Vector2(-10, 432)
+shape = SubResource("RectangleShape2D_ejerb")
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="WorldBoundary"]
+position = Vector2(1162, 434)
+shape = SubResource("RectangleShape2D_ejerb")
 
 [connection signal="timeout" from="ComboResetTimer" to="." method="_on_combo_reset_timer_timeout"]

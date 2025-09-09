@@ -27,6 +27,7 @@ const INPUT_KEYS: Dictionary[StringName, Key] = {
 }
 const SOUND_PLAYER_SCENE: PackedScene = preload("uid://dogohd77h1fxg")
 const SAVE_PATH: String = "user://savegame.cfg"
+const FALLING_NOTE_SCENE: PackedScene = preload("uid://dfwfg5401ktkn")
 
 static var instance: Main ## A globally-accessible reference to Main
 
@@ -155,6 +156,9 @@ func _increment_harmony(delta: float) -> void:
 
 
 func _add_to_sequence(key: Key) -> void:
+	var key_string := OS.get_keycode_string(key)
+	_spawn_falling_note(key_string)
+	
 	get_viewport().set_input_as_handled()
 	
 	sequence.append(key)
@@ -249,6 +253,18 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		get_tree().paused = true 
 		pause_menu.show()
+
+
+func _spawn_falling_note(key_as_string: String) -> void:
+	var note = FALLING_NOTE_SCENE.instantiate()
+	
+	var spawn_pos = get_viewport().get_visible_rect().size / 2.0
+	spawn_pos.x += randf_range(-50.0, 50.0)
+	note.position = spawn_pos
+	
+	note.set_note_text(key_as_string)
+	
+	add_child(note)
 
 
 #endregion
