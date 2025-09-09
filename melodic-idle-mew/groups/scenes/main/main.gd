@@ -46,6 +46,7 @@ var harmony: float = 0.0:
 @onready var combo_reset_timer: Timer = %ComboResetTimer
 @onready var sequence_label: Label = %SequenceLabel
 @onready var pause_menu = $PauseMenu
+@onready var offline_progress_popup = %OfflineProgressPopup
 
 
 #region Static
@@ -284,6 +285,7 @@ func save_game() -> void:
 	config.set_value("PlayerData", "harmony", harmony)
 	config.set_value("PlayerData", "harmony_per_second", harmony_per_second)
 	config.set_value("PlayerData", "instrument_color", current_instrument_color)
+	config.set_value("PlayerData", "last_session_time", Time.get_unix_time_from_system())
 	
 	for _combo: Combo in Combo.list:
 		var section: String = "Combo_%s" % _combo.type
@@ -321,6 +323,20 @@ func load_game() -> void:
 	harmony = config.get_value("PlayerData", "harmony", 0.0)
 	harmony_per_second = config.get_value("PlayerData", "harmony_per_second", 1.0)
 	current_instrument_color = config.get_value("PlayerData", "instrument_color", Color.WHITE)
+	
+	var last_time = config.get_value("PlayerData", "last_session_time", 0)
+	if last_time > 0:
+		var current_time = Time.get_unix_time_from_system()
+		var seconds_offline = current_time - last_time
+		# offline cap 7 days
+		seconds_offline = min(seconds_offline, 60 * 60 * 24 * 7) 
+		
+		var harmony_earned_offline = seconds_offline * harmony_per_second
+		
+		if harmony_earned_offline > 1:
+			harmony += harmony_earned_offline
+			offline_progress_popup.set_earnings_text(format_number(harmony_earned_offline))
+			offline_progress_popup.show()
 	
 	for _combo: Combo in Combo.list:
 		var section: String = "Combo_%s" % _combo.type
