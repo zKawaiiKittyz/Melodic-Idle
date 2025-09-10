@@ -1,8 +1,9 @@
-[gd_scene load_steps=20 format=3 uid="uid://dhwj74og5vhbq"]
+[gd_scene load_steps=24 format=3 uid="uid://dhwj74og5vhbq"]
 
 [ext_resource type="Script" uid="uid://c8mvylg0g5q2k" path="res://groups/scenes/main/main.gd" id="1_o5qli"]
 [ext_resource type="Shader" uid="uid://4m3hepw1esri" path="res://groups/scenes/main/main.gdshader" id="2_0nixb"]
 [ext_resource type="PackedScene" uid="uid://c1o7uc3soak4y" path="res://offline_progress_popup.tscn" id="3_ejerb"]
+[ext_resource type="Texture2D" uid="uid://dice757twwqmb" path="res://Circle.png" id="3_s1l1a"]
 [ext_resource type="PackedScene" uid="uid://duodi1u05b445" path="res://groups/hud/pause menu/pause_menu.tscn" id="3_u2crk"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_u2crk"]
@@ -61,6 +62,67 @@ scale_min = 50.0
 scale_max = 100.0
 scale_curve = SubResource("CurveTexture_lquwl")
 color_ramp = SubResource("GradientTexture1D_0wfyh")
+
+[sub_resource type="Animation" id="Animation_cqr6m"]
+resource_name = "pulse"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(14.913, 15.1829), Vector2(30, 30.543)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(-280, -319), Vector2(-561, -649)]
+}
+
+[sub_resource type="Animation" id="Animation_bcsxq"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(14.913, 15.1829)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-280, -319)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_qdryv"]
+_data = {
+&"RESET": SubResource("Animation_bcsxq"),
+&"pulse": SubResource("Animation_cqr6m")
+}
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u2crk"]
 size = Vector2(1179, 20)
@@ -146,6 +208,23 @@ texture = SubResource("CanvasTexture_ig7tw")
 lifetime = 0.8
 one_shot = true
 process_material = SubResource("ParticleProcessMaterial_sugp2")
+
+[node name="MetronomePulse" type="TextureRect" parent="CanvasLayer/CenterScreen"]
+modulate = Color(1, 1, 1, 0.329412)
+layout_mode = 0
+offset_left = -280.0
+offset_top = -319.0
+offset_right = -240.0
+offset_bottom = -279.0
+scale = Vector2(14.913, 15.1829)
+texture = ExtResource("3_s1l1a")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="CanvasLayer/CenterScreen/MetronomePulse"]
+libraries = {
+&"": SubResource("AnimationLibrary_qdryv")
+}
 
 [node name="UpgradesDisplay" type="VBoxContainer" parent="CanvasLayer"]
 unique_name_in_owner = true
