@@ -39,6 +39,10 @@ var harmony: float = 0.0:
 	set = set_harmony
 var total_mastery_points: int = 0
 var mastery_points_on_reset: int = 0
+#Rhythm var
+var beat_timer := Timer.new()
+var can_get_rhythm_bonus: bool = false
+var perfect_label_start_pos: Vector2
 
 @onready var harmony_label: Label = %HarmonyLabel
 @onready var keypress_particles: GPUParticles2D = %KeypressParticles
@@ -92,6 +96,14 @@ func _ready() -> void:
 	pause_menu.quit_requested.connect(quit_to_main_menu)
 	
 	prestige_button.pressed.connect(_on_prestige_button_pressed)
+	
+	#Rhythm Ready
+	beat_timer.name = "BeatTimer"
+	beat_timer.wait_time = 1.0 
+	beat_timer.timeout.connect(_on_beat_timer_timeout)
+	add_child(beat_timer)
+	beat_timer.start()
+	perfect_label_start_pos = %PerfectLabel.position
 
 
 func _setup_harmony_label() -> void:
@@ -175,7 +187,13 @@ func _increment_harmony(delta: float) -> void:
 
 
 func _add_to_sequence(key: Key) -> void:
+	#Gimme dat rhythm bonus
+	if can_get_rhythm_bonus:
+		harmony += harmony_per_second 
+		_show_perfect_feedback()
+		can_get_rhythm_bonus = false
 	var key_string := OS.get_keycode_string(key)
+	
 	_spawn_falling_note(key_string)
 	
 	get_viewport().set_input_as_handled()
@@ -307,6 +325,24 @@ func _on_prestige_button_pressed() -> void:
 	_update_sequence_label()
 	
 	save_game()
+
+
+func _on_beat_timer_timeout() -> void:
+	can_get_rhythm_bonus = true
+
+	get_tree().create_timer(0.5).timeout.connect(
+		func(): can_get_rhythm_bonus = false
+		)
+
+func _show_perfect_feedback() -> void:
+	var perfect_label = %PerfectLabel
+	perfect_label.position = perfect_label_start_pos
+	perfect_label.show()
+	perfect_label.modulate.a = 1.0
+
+	var tween = create_tween()
+	tween.tween_property(perfect_label, "modulate:a", 0.0, 0.5)
+	tween.parallel().tween_property(perfect_label, "position:y", perfect_label.position.y - 30, 0.5)
 
 
 #endregion

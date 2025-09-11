@@ -63,7 +63,46 @@ scale_max = 100.0
 scale_curve = SubResource("CurveTexture_lquwl")
 color_ramp = SubResource("GradientTexture1D_0wfyh")
 
-[sub_resource type="Animation" id="Animation_cqr6m"]
+[sub_resource type="Animation" id="Animation_bcsxq"]
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(14.913, 15.1829), Vector2(20, 20.362)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(-280, -319), Vector2(-374, -429)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.5, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0.329412), Color(1, 1, 1, 0), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_s1l1a"]
 resource_name = "pulse"
 loop_mode = 1
 tracks/0/type = "value"
@@ -76,7 +115,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 1),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector2(14.913, 15.1829), Vector2(30, 30.543)]
+"values": [Vector2(14.913, 15.1829), Vector2(20, 20.362)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -88,40 +127,25 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0, 1),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector2(-280, -319), Vector2(-561, -649)]
+"values": [Vector2(-280, -319), Vector2(-374, -429)]
 }
-
-[sub_resource type="Animation" id="Animation_bcsxq"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath(".:scale")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.5, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
-"values": [Vector2(14.913, 15.1829)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath(".:position")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(-280, -319)]
+"values": [Color(1, 1, 1, 0.329412), Color(1, 1, 1, 0), Color(1, 1, 1, 0)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_qdryv"]
 _data = {
 &"RESET": SubResource("Animation_bcsxq"),
-&"pulse": SubResource("Animation_cqr6m")
+&"pulse": SubResource("Animation_s1l1a")
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_u2crk"]
@@ -225,6 +249,26 @@ stretch_mode = 5
 libraries = {
 &"": SubResource("AnimationLibrary_qdryv")
 }
+autoplay = "pulse"
+
+[node name="PerfectLabel" type="Label" parent="CanvasLayer/CenterScreen"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -65.0
+offset_top = -24.5
+offset_right = 65.0
+offset_bottom = 24.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+theme_override_font_sizes/font_size = 35
+text = "Perfect!"
 
 [node name="UpgradesDisplay" type="VBoxContainer" parent="CanvasLayer"]
 unique_name_in_owner = true
